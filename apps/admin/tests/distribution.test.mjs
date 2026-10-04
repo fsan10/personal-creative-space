@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+const source=readFileSync(new URL('../lib/distribution.ts',import.meta.url),'utf8');
+const module=await import('data:text/javascript;base64,'+Buffer.from(ts.transpile(source,{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022})).toString('base64'));
+assert.equal(module.platforms.some(p=>p.id==='xiaohongshu'),true);
+assert.equal(module.mapAccountResult({type:'xiaohongshu',status:'done',editResp:{draftLink:'https://creator.xiaohongshu.com/draft/123'}}).status,'draft');
+assert.equal(module.mapAccountResult({type:'zhihu',status:'done'}).status,'unknown');
+assert.equal(module.mapAccountResult({type:'juejin',status:'failed',error:'登录失效 401'}).status,'login_expired');
+assert.equal(module.mapAccountResult({type:'xiaohongshu',status:'failed',error:'需要补充封面'}).status,'needs_input');
+assert.equal(module.externalPlatformLink('https://csdn.net.evil.test/post','csdn'),'');
+assert.equal(module.externalPlatformLink('javascript:alert(1)','zhihu'),'');
+assert.equal(module.externalPlatformLink('https://www.zhihu.com/question/123','zhihu'),'https://www.zhihu.com/question/123');
+assert.equal(module.absoluteMedia('![图](/media/abc) <video src="/media/video"></video>','https://example.test'),'![图](https://example.test/media/abc) <video src="https://example.test/media/video"></video>');
+console.log('Distribution checks passed: Xiaohongshu, draft-only interpretation, result uncertainty, login/input errors, safe links and public media');

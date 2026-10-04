@@ -1,19 +1,19 @@
 # 首批文章分发
 
-首批配置为知乎、掘金、CSDN、小红书。配置见 `config/distribution-platforms.json`；当前配置仅声明接入目标，所有连接状态为 `not_connected`。
+知乎、掘金、CSDN、小红书长文草稿已接入管理台。采用 Wechatsync v2 浏览器扩展提供的 `$syncer.getAccounts`、`$syncer.addTask` 兼容接口；原创适配代码不复制 GPL 扩展源码，也不远程加载未固定版本脚本。
 
-## 小红书
+使用步骤：安装扩展，允许扩展访问管理端网站，在同一浏览器登录各平台；在管理台检测账号、选择最新已发布文章和平台、点击一键同步。素材链接转为公开前台 URL，平台 Cookie 不上传到管理 API。
 
-优先使用 Wechatsync 已有的长文笔记草稿同步与 ProseMirror 内容转换。正文、图片、封面和最终状态通过平台适配器处理。
+数据库保存文章版本、平台、账号摘要、任务状态与实际草稿链接。同一版本、平台和账号使用唯一幂等键。扩展返回 done 只记录为草稿；缺少有效链接记为结果待核对。五分钟未完成、关闭页面或中断后须先到平台核对；明确核实没有产生草稿后可以重新排队。正式发布链接由主人手动核实并记录，界面说明验证来源。
 
-状态必须准确区分：待处理、执行中、已生成草稿、已正式发布、待补充信息、登录失效和失败。只有平台返回并验证了正式发布结果，才能记录为已正式发布。
+状态：待同步、运行中、平台草稿、本人核实发布、待补充信息、登录失效、失败、结果待核对。小红书图文和视频笔记没有作为已接入能力承诺。
 
-图文笔记和视频笔记作为独立能力评估；不把长文草稿支持等同于所有笔记类型已经可发布。连接后使用本人的账号分别验收。
+## 验收范围
 
-## 开源依据
+纯逻辑检查覆盖小红书、草稿/未知结果解释、登录失效、补充信息、平台链接边界与媒体地址转换。尚未使用真实平台账号发送文章；实际同步需要本人的浏览器扩展及平台登录态。
 
-- https://github.com/wechatsync/Wechatsync/blob/v2/CHANGELOG.md
-- https://github.com/wechatsync/Wechatsync/blob/v2/packages/extension/ROADMAP.md
-- https://github.com/xpzouying/xiaohongshu-mcp
+## 协议依据
 
-接入后记录采用版本、平台能力矩阵、账号连接状态和实际验收结果。
+- https://github.com/wechatsync/Wechatsync/blob/v2/packages/extension/src/content/api.ts
+- https://github.com/wechatsync/Wechatsync/blob/v2/packages/extension/public/inject-api.js
+- https://github.com/wechatsync/article-syncjs/blob/main/src/Main.vue

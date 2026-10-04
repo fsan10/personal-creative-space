@@ -7,6 +7,7 @@ import MediaLibrary from './MediaLibrary';
 import ImportExport from './ImportExport';
 import RecommendationPanel from './RecommendationPanel';
 import SettingsPanel from './SettingsPanel';
+import DistributionPanel from './DistributionPanel';
 const navigation=[['overview','概览',LayoutDashboard],['articles','文章',PenLine],['projects','作品与部署',FolderOpen],['media','媒体库',Images],['distribution','多平台分发',Radio],['recommendation','首页推荐',SlidersHorizontal],['settings','设置',Settings]] as const;
 export default function Studio({name,webUrl}:{name:string;webUrl:string}) {
   const [section,setSection]=useState('overview'),[items,setItems]=useState<Content[]>([]),[editor,setEditor]=useState<Content|null>(null),[message,setMessage]=useState(''),[loading,setLoading]=useState(true),[query,setQuery]=useState(''),[trash,setTrash]=useState(false);
@@ -27,6 +28,6 @@ export default function Studio({name,webUrl}:{name:string;webUrl:string}) {
   {section==='media'&&<MediaLibrary notify={notify}/>}
   {section==='recommendation'&&<RecommendationPanel items={items} notify={notify}/>}
   {section==='settings'&&<SettingsPanel notify={notify} onImported={()=>void refresh()}/>}
-  {!['overview','articles','projects','media','recommendation','settings'].includes(section)&&<div className="empty-state"><Sparkles size={30}/><h2>{navigation.find(n=>n[0]===section)?.[1]}</h2><p>此模块正在接入独立管理 API。</p></div>}
+  {section==='distribution'&&<DistributionPanel items={items} notify={notify}/>}
   </div>}</main></div>;
 }
