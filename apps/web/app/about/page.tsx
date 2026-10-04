@@ -1,0 +1,5 @@
+import { getPublicData } from '../../lib/public-data';
+import { ArrowUpRight,PenLine,FolderOpen } from 'lucide-react';
+export const dynamic='force-dynamic';
+export const metadata={title:'关于'};
+export default async function Page(){const {profile}=await getPublicData();return <div className="about-page"><div className="about-title"><span className="about-portrait">{Array.from(profile.name)[0]}<i>✳</i></span><h1>你好，我是{profile.name}。</h1><p>{profile.tagline}</p></div><div className="about-body"><p>{profile.bio}</p><p>我把自己的文章和作品放在这张创作桌上。你可以沿着文字了解一个想法的过程，也可以直接打开作品，试试看它现在的样子。</p><div className="about-links"><a href="/articles"><PenLine size={20}/><div><strong>读一些文字</strong><span>笔记、思考与创作过程</span></div><ArrowUpRight size={20}/></a><a href="/projects"><FolderOpen size={20}/><div><strong>看一些作品</strong><span>项目、演示与交互实验</span></div><ArrowUpRight size={20}/></a></div><a href={profile.github} target="_blank" rel="noreferrer" className="ink-button">在 GitHub 找到我<ArrowUpRight size={17}/></a></div></div>;}

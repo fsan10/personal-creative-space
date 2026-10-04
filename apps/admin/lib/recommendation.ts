@@ -9,7 +9,7 @@ export function normaliseOptions(input:Partial<RecommendationOptions>={}):Recomm
   return {weights,pins:Array.from(new Set(input.pins??[])),exploration:Math.min(.2,Math.max(0,input.exploration??.15))};
 }
 function hash(text:string){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
-export function recommend(items:RankedItem[],input:Partial<RecommendationOptions>={},context:{count?:number;seed?:string;topics?:string[];now?:number}={}) {
+export function recommend<T extends RankedItem>(items:T[],input:Partial<RecommendationOptions>={},context:{count?:number;seed?:string;topics?:string[];now?:number}={}) {
   const options=normaliseOptions(input),count=Math.max(1,Math.min(30,context.count??6)),now=context.now??Date.now(),topics=context.topics??[],seed=context.seed??'default';
   const live=items.filter(item=>item.isPublic===true&&item.status==='published');
   const ranked=live.map(item=>{
@@ -41,7 +41,7 @@ export function recommend(items:RankedItem[],input:Partial<RecommendationOptions
   }
   return selected;
 }
-export function relatedContent(item:RankedItem,items:RankedItem[],count=4) {
+export function relatedContent<T extends RankedItem>(item:RankedItem,items:T[],count=4) {
   return items.filter(candidate=>candidate.id!==item.id&&candidate.isPublic===true&&candidate.status==='published').map(candidate=>{
     const explicit=item.relatedIds?.includes(candidate.id)||candidate.relatedIds?.includes(item.id);
     const shared=candidate.tags.filter(tag=>item.tags.includes(tag)).length;

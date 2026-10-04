@@ -1,0 +1,16 @@
+import { notFound } from 'next/navigation';
+import { ArrowLeft,ArrowUpRight } from 'lucide-react';
+import { getPublicData } from '../../../lib/public-data';
+import { renderMarkdown,readingMinutes } from '../../../lib/markdown';
+import { relatedContent } from '../../../lib/recommendation';
+import ReaderTools from '../../../components/ReaderTools';
+export const dynamic='force-dynamic';
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}){const {slug}=await params,{items}=await getPublicData(),item=items.find(i=>i.kind==='article'&&i.slug===slug);return item?{title:item.title,description:item.excerpt,alternates:{canonical:`/articles/${encodeURIComponent(slug)}`},openGraph:{title:item.title,description:item.excerpt,type:'article',images:item.cover?[{url:item.cover}]:[]}}:{title:'文章未找到'};}
+export default async function Page({params}:{params:Promise<{slug:string}>}){
+  const {slug}=await params,{items,profile}=await getPublicData(),item=items.find(i=>i.kind==='article'&&i.slug===slug);if(!item)notFound();
+  let heading=0;const html=renderMarkdown(item.markdown).replace(/<h([23])>/g,(_,depth)=>`<h${depth} id="section-${heading++}">`);
+  const toc=Array.from(html.matchAll(/<h([23]) id="section-(\d+)">([\s\S]*?)<\/h[23]>/g)).map(match=>({depth:Number(match[1]),id:match[2],title:match[3].replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')}));
+  const related=relatedContent(item,items,3);
+  const structured={'@context':'https://schema.org','@type':'BlogPosting',headline:item.title,description:item.excerpt,datePublished:item.publicAt,author:{'@type':'Person',name:profile.name}};
+  return <div className="article-page"><a href="/articles" className="back-link"><ArrowLeft size={15}/>回到文章</a><header className="article-heading"><div className="article-tags">{item.tags.map(tag=><span key={tag}>#{tag}</span>)}{item.demoContent&&<span className="demo-label">可编辑的示例文章</span>}</div><h1>{item.title}</h1><p>{item.excerpt}</p><div className="author-line"><span className="little-avatar">{Array.from(profile.name)[0]}</span><strong>{profile.name}</strong><time>{new Date(item.publicAt??'').toLocaleDateString('zh-CN')}</time><span>{readingMinutes(item.markdown)} 分钟阅读</span></div></header>{item.cover&&<img className="article-cover" src={item.cover} alt={item.title}/>}<div className="article-body-layout"><article className="prose article-body" dangerouslySetInnerHTML={{__html:html}}/>{toc.length>0&&<aside className="article-toc"><h2>这一篇的目录</h2>{toc.map(entry=><a key={entry.id} className={entry.depth===3?'subheading':''} href={`#section-${entry.id}`}>{entry.title}</a>)}</aside>}</div><ReaderTools id={item.id} markdown={item.markdown} slug={item.slug}/>{related.length>0&&<section className="related-section"><h2>沿着这个想法，继续看看</h2><div className="related-grid">{related.map(candidate=><a key={candidate.id} href={`/${candidate.kind==='article'?'articles':'projects'}/${encodeURIComponent(String(candidate.slug))}`}><span>{candidate.kind==='article'?'相关文字':'相关作品'}</span><h3>{candidate.title}</h3><ArrowUpRight size={18}/></a>)}</div></section>}<script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(structured).replace(/</g,'\\u003c')}}/></div>;
+}

@@ -1,0 +1,12 @@
+import { notFound } from 'next/navigation';
+import { ArrowLeft,ArrowUpRight,GitBranch,Play } from 'lucide-react';
+import { getPublicData,safeLink } from '../../../lib/public-data';
+import { renderMarkdown } from '../../../lib/markdown';
+import { relatedContent } from '../../../lib/recommendation';
+import { ProjectArt } from '../../../components/Cards';
+export const dynamic='force-dynamic';
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}){const {slug}=await params,{items}=await getPublicData(),item=items.find(i=>i.kind==='project'&&i.slug===slug);return item?{title:item.title,description:item.excerpt,alternates:{canonical:`/projects/${encodeURIComponent(slug)}`}}:{title:'作品未找到'};}
+export default async function Page({params}:{params:Promise<{slug:string}>}){
+  const {slug}=await params,{items}=await getPublicData(),item=items.find(i=>i.kind==='project'&&i.slug===slug);if(!item)notFound();const related=relatedContent(item,items,3);
+  return <div className="project-detail"><a href="/projects" className="back-link"><ArrowLeft size={15}/>回到作品</a><header className="project-detail-heading"><div><div className="article-tags"><span>{item.projectStatus==='live'?'已经可以体验':'持续探索中'}</span>{item.demoContent&&<span className="demo-label">内置的演示作品</span>}</div><h1>{item.title}</h1><p>{item.excerpt}</p></div><div className="project-detail-actions">{safeLink(item.demo)&&<a className="ink-button" href={safeLink(item.demo)} target="_blank" rel="noreferrer"><Play size={15}/>打开演示<ArrowUpRight size={15}/></a>}{safeLink(item.github)&&<a className="outline-button" href={safeLink(item.github)} target="_blank" rel="noreferrer"><GitBranch size={16}/>查看源码</a>}</div></header><div className="project-showcase"><ProjectArt item={item}/></div><div className="project-content-layout"><article className="prose" dangerouslySetInnerHTML={{__html:renderMarkdown(item.markdown)}}/><aside><h2>这个作品用到的东西</h2><div className="project-tags">{(item.tech??item.tags).map(tag=><span key={tag}>{tag}</span>)}</div><p className="muted">{item.demoContent?'这是随站点附带的可运行示例，可以替换为你的项目。':'项目的过程、更新和相关文字会持续放在这里。'}</p></aside></div>{related.length>0&&<section className="related-section"><h2>这个作品的相关创作</h2><div className="related-grid">{related.map(candidate=><a key={candidate.id} href={`/${candidate.kind==='article'?'articles':'projects'}/${encodeURIComponent(String(candidate.slug))}`}><span>{candidate.kind==='article'?'创作笔记':'另一个作品'}</span><h3>{candidate.title}</h3><ArrowUpRight size={18}/></a>)}</div></section>}</div>;
+}
