@@ -43,6 +43,6 @@ export async function serveMedia(id:string,request:Request,publicOnly=false):Pro
   if(!object)return new Response('不存在',{status:404});
   const headers=new Headers({'Content-Type':media.mime,'X-Content-Type-Options':'nosniff','Content-Disposition':'inline','Cache-Control':'private, max-age=60','Accept-Ranges':'bytes'});
   headers.set('ETag',object.httpEtag);
-  if(object.range&&'offset'in object.range){const start=object.range.offset,end=start+object.range.length-1;headers.set('Content-Range',`bytes ${start}-${end}/${object.size}`);headers.set('Content-Length',String(object.range.length));return new Response(object.body,{status:206,headers});}
+  if(object.range&&'offset'in object.range&&typeof object.range.offset==='number'&&typeof object.range.length==='number'){const start=object.range.offset,end=start+object.range.length-1;headers.set('Content-Range',`bytes ${start}-${end}/${object.size}`);headers.set('Content-Length',String(object.range.length));return new Response(object.body,{status:206,headers});}
   headers.set('Content-Length',String(object.size));return new Response(object.body,{headers});
 }
