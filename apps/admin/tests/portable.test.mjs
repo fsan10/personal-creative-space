@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {serializeMarkdown,parseMarkdown,safeArchivePath,rewriteMedia} from '../lib/portable.ts';
+import JSZip from 'jszip';
+const item={id:'123',kind:'article',title:'中文：一次实验',slug:'中文-experiment',tags:['设计','Markdown'],cover:'/media/asset',markdown:'\n# 标题\n\n```js\nconst answer = 42;\n```\n\n![图片](/media/asset)\n',excerpt:'带媒体的文章'};
+const parsed=parseMarkdown(serializeMarkdown(item),'file.md');assert.equal(parsed.markdown,item.markdown);assert.equal(parsed.title,item.title);assert.deepEqual(parsed.tags,item.tags);
+assert.equal(parseMarkdown('没有元数据','普通文章.md').title,'普通文章');
+assert.equal(safeArchivePath('../private'),false);assert.equal(safeArchivePath('/absolute'),false);assert.equal(safeArchivePath('media/image.png'),true);
+const portable=rewriteMedia(serializeMarkdown(item),'/media/asset','../media/asset.png');
+const zip=new JSZip();zip.file('articles/article.md',portable);zip.file('media/asset.png',new Uint8Array([137,80,78,71]));
+const loaded=await JSZip.loadAsync(await zip.generateAsync({type:'uint8array'}));
+const restored=parseMarkdown(rewriteMedia(await loaded.file('articles/article.md').async('string'),'../media/asset.png','/media/new'),'article.md');
+assert.match(restored.markdown,/\/media\/new/);assert.equal(restored.cover,'/media/new');assert.deepEqual(Array.from(await loaded.file('media/asset.png').async('uint8array')),[137,80,78,71]);
+console.log('Portable checks passed: UTF-8 Markdown/YAML, relative media round-trip and ZIP paths');

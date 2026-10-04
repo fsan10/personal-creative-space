@@ -13,3 +13,5 @@
 | 004 | checkpoint-004-media | R2 媒体库、文件格式与容量校验、拖放/粘贴上传、插入图片与视频、封面选择、发布素材访问边界 | 支持的媒体类型和访问路径核对；首次类型检查发现 R2 Range 可选字段错误，见 004a 修复 | 本节点随提交同步 |
 
 | 004a | 修复提交 | 明确视频 Range 的 offset 与 length 可选值检查 | 全部 TypeScript 检查通过 | 本修复随提交同步 |
+
+| 005 | checkpoint-005-portable | Markdown + YAML 导入导出、含媒体 ZIP 归档、SHA-256 校验、素材与关联作品映射、导入为草稿 | 中文源文/YAML/图片与 ZIP 往返检查通过；TypeScript 检查通过 | 本节点随提交同步 |
