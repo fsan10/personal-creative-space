@@ -15,6 +15,13 @@
       "when": 1791106348502,
       "tag": "0001_giant_quicksilver",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1791108481541,
+      "tag": "0002_greedy_virginia_dare",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `jobs_one_active_deployment` ON `jobs` (`content_id`) WHERE kind='deployment' AND status IN ('submitting','queued','running','unknown');

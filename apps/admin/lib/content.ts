@@ -1,16 +1,18 @@
 import { z } from 'zod';
 import { db } from './server';
+import {githubRepository,publicHttps} from './deployment';
+const displayUrl=z.string().max(2000).refine(value=>!value||/^\/(?!\/)/.test(value)||!!publicHttps(value),'请输入 HTTPS 或站内地址');
 
 export const contentInput = z.object({
   id: z.string().uuid().optional(), kind: z.enum(['article','project']), title: z.string().trim().min(1).max(180),
   slug: z.string().trim().min(1).max(140).regex(/^[\p{L}\p{N}_-]+$/u), excerpt: z.string().max(1200).default(''),
-  markdown: z.string().max(300000).default(''), cover: z.string().max(2000).default(''),
+  markdown: z.string().max(300000).default(''), cover: displayUrl.default(''),
   tags: z.array(z.string().trim().min(1).max(40)).max(15).default([]),
   accent: z.enum(['blue','orange','yellow','lilac']).default('blue'),
   editorial: z.number().min(0).max(5).default(3), expectedRevision: z.number().int().min(1).optional(),
-  github: z.string().max(2000).default(''), demo: z.string().max(2000).default(''),
+  github: z.string().max(2000).refine(value=>!value||!!githubRepository(value)).default(''), demo: displayUrl.default(''),
   tech: z.array(z.string().max(40)).max(20).default([]), projectStatus: z.enum(['idea','building','live','paused']).default('building'),
-  deploymentUuid: z.string().max(100).default(''), relatedIds: z.array(z.string().uuid()).max(30).default([]),
+  deploymentUuid: z.string().max(100).regex(/^[A-Za-z\d_-]*$/).default(''), relatedIds: z.array(z.string().uuid()).max(30).default([]),
   series: z.string().max(80).default(''), demoContent: z.boolean().default(false),
 });
 export type Content = z.infer<typeof contentInput> & {

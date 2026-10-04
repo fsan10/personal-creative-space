@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from 'typescript';
+const source=readFileSync(new URL('../lib/deployment.ts',import.meta.url),'utf8');
+const module=await import('data:text/javascript;base64,'+Buffer.from(ts.transpile(source,{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022})).toString('base64'));
+const app=module.safeApplication({uuid:'abc',name:'作品',fqdn:'https://example.com',git_repository:'https://github.com/fsan10/personal-creative-space',http_basic_auth_password:'must-not-return',manual_webhook_secret_github:'must-not-return',environment_variables:[{value:'must-not-return'}]});
+assert.equal(JSON.stringify(app).includes('must-not-return'),false);
+assert.equal(module.publicHttps('https://token:secret@example.com'),'');
+assert.equal(module.publicHttps('http://localhost:8000'),'');
+assert.equal(module.githubRepository('https://github.com.evil.test/account/repo'),'');
+assert.equal(module.safeImages({images:[{tag:'abc',is_current:true,secret:'hidden'}]}).images[0].current,true);
+assert.equal(module.deploymentState('finished'),'finished');
+assert.equal(module.deploymentState('queued'),'queued');
+assert.equal(module.deploymentState('unexpected'),'unknown');
+console.log('Deployment checks passed: public repository validation, secret-free metadata, retained images, real deployment states');
