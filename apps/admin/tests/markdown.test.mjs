@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {renderMarkdown, embedVideo, readingMinutes} from '../lib/markdown.ts';
+const html=renderMarkdown('# 标题\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\n- [x] 完成\n\n```js\nconst a=1;\n```');
+assert.match(html,/<h1>标题/);assert.match(html,/<table>/);assert.match(html,/disabled/);assert.match(html,/language-js/);
+const unsafe=renderMarkdown('<script>alert(1)</script><img src="javascript:alert(2)" onerror="alert(3)"><iframe src="https://evil.example"></iframe><a href="javascript:evil()">bad</a>');
+assert.doesNotMatch(unsafe,/script|onerror|javascript:|evil.example/);
+assert.match(renderMarkdown(embedVideo('https://player.bilibili.com/player.html?bvid=BV1test')),/iframe/);
+assert.throws(()=>embedVideo('javascript:alert(1)'));assert.throws(()=>embedVideo('https://evil.example/video'));
+assert.equal(readingMinutes('a'.repeat(1400)),2);
+console.log('Markdown checks passed: GFM, escaping, media allowlist, reading time');
