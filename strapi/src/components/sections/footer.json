@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_sections_footers",
+  "info": {
+    "displayName": "Footer",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "statement": {
+      "type": "text",
+      "required": true
+    },
+    "copyright": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

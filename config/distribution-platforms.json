@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "defaultMode": "draft",
+  "platforms": [
+    {
+      "id": "zhihu",
+      "name": "知乎",
+      "firstBatch": true,
+      "adapter": "wechatsync",
+      "contentModes": ["article"],
+      "integrationStatus": "not_connected"
+    },
+    {
+      "id": "juejin",
+      "name": "掘金",
+      "firstBatch": true,
+      "adapter": "wechatsync",
+      "contentModes": ["article"],
+      "integrationStatus": "not_connected"
+    },
+    {
+      "id": "csdn",
+      "name": "CSDN",
+      "firstBatch": true,
+      "adapter": "wechatsync",
+      "contentModes": ["article"],
+      "integrationStatus": "not_connected"
+    },
+    {
+      "id": "xiaohongshu",
+      "name": "小红书",
+      "firstBatch": true,
+      "adapter": "wechatsync",
+      "contentModes": ["long_form_draft"],
+      "integrationStatus": "not_connected",
+      "publishedStatusRequiresVerification": true
+    },
+    {
+      "id": "weixin",
+      "name": "微信公众号",
+      "firstBatch": false,
+      "adapter": "wechatsync",
+      "contentModes": ["article"],
+      "integrationStatus": "not_connected",
+      "accountCapabilitiesRequired": true
+    }
+  ]
+}

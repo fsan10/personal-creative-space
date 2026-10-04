@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_sections_skills",
+  "info": {
+    "displayName": "Skills",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "headline": {
+      "type": "string",
+      "required": true
+    },
+    "supportiveText": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

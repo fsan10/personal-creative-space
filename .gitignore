@@ -1,0 +1,20 @@
+node_modules
+readme-images
+.vscode
+.DS_Store
+frontend/next.config.js
+
+# Private runtime credentials and local state
+.env
+.env.*
+!.env.example
+!.env.template
+!.env.sample
+*.pem
+*.key
+cookies.json
+cookies/
+credentials/
+private-media/
+local-state/
+*.log

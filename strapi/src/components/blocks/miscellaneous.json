@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_blocks_miscellaneous",
+  "info": {
+    "displayName": "Miscellaneous",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "localeString": {
+      "type": "string",
+      "required": true,
+      "regex": "^[a-z]{2}-[A-Z]{2}$"
+    },
+    "htmlLanguageTag": {
+      "type": "string",
+      "required": true
+    },
+    "themeColor": {
+      "type": "string",
+      "required": true,
+      "regex": "^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$"
+    }
+  }
+}

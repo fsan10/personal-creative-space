@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_sections_headers",
+  "info": {
+    "displayName": "Header",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "additionalNavigationItems": {
+      "type": "component",
+      "repeatable": true,
+      "component": "basic.button",
+      "required": false
+    },
+    "cta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "basic.button",
+      "required": true
+    }
+  }
+}
