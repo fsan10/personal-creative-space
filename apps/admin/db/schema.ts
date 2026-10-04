@@ -19,3 +19,5 @@ export const jobs = sqliteTable('jobs', {
   platform: text('platform').notNull(), status: text('status').notNull(), idempotencyKey: text('idempotency_key').notNull(),
   dataJson: text('data_json').notNull(), createdAt: text('created_at').notNull(), updatedAt: text('updated_at').notNull(),
 }, table => [uniqueIndex('jobs_idempotency_unique').on(table.idempotencyKey)]);
+export const metrics = sqliteTable('metrics', {contentId:text('content_id').primaryKey(),views:integer('views').notNull().default(0),reads:integer('reads').notNull().default(0)});
+export const events = sqliteTable('events', {id:text('id').primaryKey(),contentId:text('content_id').notNull(),kind:text('kind').notNull(),day:text('day').notNull()});

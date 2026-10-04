@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {recommend,relatedContent,normaliseOptions} from '../lib/recommendation.ts';
+const now=Date.parse('2026-10-04T00:00:00Z');
+const make=(id,kind='article',tag='设计')=>({id,kind,title:id,tags:[tag],markdown:'正文',excerpt:'简介',cover:'/cover.png',isPublic:true,status:'published',publicAt:'2026-10-01T00:00:00Z',editorial:3});
+const data=[...Array.from({length:12},(_,i)=>make('a'+i,'article',i%2?'设计':'代码')),make('project','project','代码'),{...make('draft'),status:'draft',isPublic:false}];
+const options={pins:['draft','a4'],exploration:.2};
+const ranked=recommend(data,options,{now,seed:'stable',count:6});
+assert.equal(ranked[0].id,'a4');assert.equal(ranked.some(item=>item.id==='draft'),false);assert.equal(ranked.some(item=>item.kind==='project'),true);
+assert.equal(new Set(ranked.map(item=>item.id)).size,6);assert.deepEqual(recommend(data,options,{now,seed:'stable',count:6}),ranked);
+assert.equal(Object.values(normaliseOptions({weights:{editorial:1,completeness:1,freshness:1,engagement:1,relevance:1}}).weights).reduce((s,n)=>s+n,0),1);
+assert.ok(ranked.every(item=>Number.isFinite(item.score)&&item.coldStart));
+const related=relatedContent({...make('root'),relatedIds:['project']},data);assert.equal(related[0].id,'project');assert.equal(related.some(item=>item.id==='draft'),false);
+console.log('Recommendation checks passed: public-only, pins, type quota, stable session, cold start, relations');

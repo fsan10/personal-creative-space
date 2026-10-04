@@ -15,3 +15,5 @@
 | 004a | 修复提交 | 明确视频 Range 的 offset 与 length 可选值检查 | 全部 TypeScript 检查通过 | 本修复随提交同步 |
 
 | 005 | checkpoint-005-portable | Markdown + YAML 导入导出、含媒体 ZIP 归档、SHA-256 校验、素材与关联作品映射、导入为草稿 | 中文源文/YAML/图片与 ZIP 往返检查通过；TypeScript 检查通过 | 本节点随提交同步 |
+
+| 006 | checkpoint-006-recommendation | 混合推荐、公开过滤、置顶、冷启动、权重预览、主题多样性、自愿匿名阅读反馈和个人资料设置 | 推荐行为与事件去重 SQL 检查通过；TypeScript 检查通过；独立追加迁移 | 本节点随提交同步 |

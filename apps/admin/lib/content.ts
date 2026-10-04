@@ -55,10 +55,10 @@ export async function saveContent(value:unknown) {
 }
 
 export async function publicContent() {
-  const result = await db().prepare('SELECT live_json,public_at FROM contents WHERE live_json IS NOT NULL AND public_at<=? AND trashed_at IS NULL ORDER BY public_at DESC').bind(new Date().toISOString()).all<{live_json:string;public_at:string}>();
+  const result = await db().prepare('SELECT contents.live_json,contents.public_at,metrics.views,metrics.reads FROM contents LEFT JOIN metrics ON metrics.content_id=contents.id WHERE contents.live_json IS NOT NULL AND contents.public_at<=? AND contents.trashed_at IS NULL ORDER BY contents.public_at DESC').bind(new Date().toISOString()).all<{live_json:string;public_at:string;views:number|null;reads:number|null}>();
   return result.results.map(row => {
     const data=JSON.parse(row.live_json);
     const { deploymentUuid, expectedRevision, ...safe } = data;
-    return { ...safe, status:'published', isPublic:true, publicAt:row.public_at };
+    return { ...safe, status:'published', isPublic:true, publicAt:row.public_at, views:row.views??0, reads:row.reads??0 };
   });
 }

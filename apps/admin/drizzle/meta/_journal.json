@@ -8,6 +8,13 @@
       "when": 1791104265496,
       "tag": "0000_naive_lady_bullseye",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1791106348502,
+      "tag": "0001_giant_quicksilver",
+      "breakpoints": true
     }
   ]
 }
