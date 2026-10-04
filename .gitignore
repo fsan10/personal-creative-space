@@ -18,3 +18,10 @@ credentials/
 private-media/
 local-state/
 *.log
+
+node_modules/
+dist/
+.sites-runtime/
+.wrangler/
+.vinext/
+tsconfig.tsbuildinfo
