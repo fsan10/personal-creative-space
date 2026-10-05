@@ -11,11 +11,14 @@ export async function authorize(request: Request): Promise<boolean> {
   const origin = request.headers.get('origin');
   if (origin && origin !== new URL(request.url).origin) return false;
   if (await getChatGPTUser()) return true;
-  const supplied = request.headers.get('x-admin-service-key'), expected = env.ADMIN_SERVICE_KEY;
-  if (!expected || !supplied || expected.length !== supplied.length) return false;
-  let difference = 0;
-  for (let i = 0; i < expected.length; i++) difference |= expected.charCodeAt(i) ^ supplied.charCodeAt(i);
-  return difference === 0;
+  const supplied = request.headers.get('x-admin-service-key');
+  if (!supplied) return false;
+  for (const expected of [env.ADMIN_SERVICE_KEY,env.ADMIN_AUTOMATION_KEY]) {
+    if (!expected || expected.length !== supplied.length) continue;
+    let difference=0;for(let i=0;i<expected.length;i++)difference|=expected.charCodeAt(i)^supplied.charCodeAt(i);
+    if(difference===0)return true;
+  }
+  return false;
 }
 export async function getSetting(key: string, fallback: unknown) {
   const row = await db().prepare('SELECT data_json FROM settings WHERE key = ?').bind(key).first<{data_json: string}>();
