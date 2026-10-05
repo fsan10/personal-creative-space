@@ -14,7 +14,7 @@ export async function connectionStatus(){try{const connection=await getConnectio
 export async function coolify(path:string,method='GET',body?:unknown,provided?:Connection){
  const connection=provided??await getConnection();if(!connection)throw new Error('尚未连接 Coolify，请到设置填写服务器地址和 API Token');
  if(!path.startsWith('/')||path.startsWith('//'))throw new Error('无效的服务路径');
- let response:Response;try{response=await fetch(base(connection.url)+path,{method,headers:{Authorization:'Bearer '+connection.token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,redirect:'error',signal:AbortSignal.timeout(25000)});}catch{throw new Error('Coolify 请求未取得结果，请核对服务记录后再操作');}
+ let response:Response;try{response=await fetch(base(connection.url)+path,{method,headers:{Authorization:'Bearer '+connection.token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined,redirect:'manual',signal:AbortSignal.timeout(25000)});}catch{throw new Error('Coolify 请求未取得结果，请核对服务记录后再操作');}
  if(!response.ok){await response.body?.cancel();throw new Error(response.status===401||response.status===403?'Coolify 授权失效或权限不足':`Coolify 返回 ${response.status}，请检查资源配置`);}
  const reader=response.body?.getReader(),chunks:Uint8Array[]=[];let size=0;
  if(reader){while(true){const {value,done}=await reader.read();if(done)break;size+=value.length;if(size>1048576){await reader.cancel();throw new Error('服务响应过大，请在 Coolify 查看完整日志');}chunks.push(value);}}

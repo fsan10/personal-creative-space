@@ -6,5 +6,7 @@ export async function cms(path: string, init: RequestInit = {}) {
   if (origin.protocol !== 'https:') throw new Error('内容服务需要 HTTPS');
   const headers = new Headers(init.headers);
   headers.set('OAI-Sites-Authorization', `Bearer ${env.CMS_SITE_TOKEN}`);
-  return fetch(new URL(path, origin), { ...init, headers, redirect: 'error' });
+  const response=await fetch(new URL(path, origin), { ...init, headers, redirect: 'manual' });
+  if(response.status>=300&&response.status<400){await response.body?.cancel();throw new Error('CMS_REDIRECT_BLOCKED');}
+  return response;
 }
