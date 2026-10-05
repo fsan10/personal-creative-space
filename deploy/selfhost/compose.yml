@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: creative
+      POSTGRES_USER: creative
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?Set DATABASE_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U creative -d creative"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  strapi:
+    build:
+      context: ../..
+      dockerfile: deploy/selfhost/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 1337
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: creative
+      DATABASE_USERNAME: creative
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:?Set DATABASE_PASSWORD}
+      DATABASE_SSL: "false"
+      APP_KEYS: ${APP_KEYS:?Set APP_KEYS}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:?Set ADMIN_JWT_SECRET}
+      API_TOKEN_SALT: ${API_TOKEN_SALT:?Set API_TOKEN_SALT}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT:?Set TRANSFER_TOKEN_SALT}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?Set AWS_ACCESS_KEY_ID}
+      AWS_ACCESS_SECRET: ${AWS_ACCESS_SECRET:?Set AWS_ACCESS_SECRET}
+      AWS_BUCKET: ${AWS_BUCKET:?Set AWS_BUCKET}
+      AWS_REGION: ${AWS_REGION:?Set AWS_REGION}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - 127.0.0.1:1337:1337
+    volumes:
+      - strapi-uploads:/app/public/uploads
+
+volumes:
+  postgres-data:
+  strapi-uploads:

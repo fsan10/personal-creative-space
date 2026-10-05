@@ -2,6 +2,6 @@
 
 前台与管理台各为独立 Sites。管理台独享内容数据库 D1 与媒体存储 R2。前台 Worker 仅代理管理台的公开内容 API，服务访问令牌保存在 Sites 运行环境，不进入浏览器或公开代码。管理台保持本人私有，写接口另核对身份与来源。
 
-上游 Strapi 源码、数据结构与许可证保留。Sites 运行环境不能运行常驻 Node 服务或 Docker，所以本轮可运行版本使用 D1/R2 API；独立 Strapi + PostgreSQL + S3 部署包用于后续自托管。两种部署均保留 Markdown 源文、项目和媒体的可移植导出。
+上游 Strapi 源码、数据结构与许可证保留。Sites 运行环境不能运行常驻 Node 服务或 Docker，所以当前上线版本使用 D1/R2 API。`deploy/selfhost/` 提供保留上游 Strapi + PostgreSQL + S3 的可选配置，尚未在 Docker 上运行验收，也尚未迁移新管理台接口。新管理台导出的 Markdown 和媒体 ZIP 需额外映射到 Strapi 模型；两种归档格式不兼容。
 
 项目真正运行与构建由外部 Coolify 执行。平台分发依赖本人浏览器的同步扩展与各平台登录，草稿同步与正式发布分别记录。未连接服务不会显示为成功。
