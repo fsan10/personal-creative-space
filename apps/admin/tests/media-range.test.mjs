@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {mediaRange} from '../lib/media-range.ts';
+assert.deepEqual(mediaRange(null,68),{kind:'full'});
+assert.deepEqual(mediaRange('bytes=0-7',68),{kind:'partial',offset:0,length:8});
+assert.deepEqual(mediaRange('bytes=60-',68),{kind:'partial',offset:60,length:8});
+assert.deepEqual(mediaRange('bytes=-8',68),{kind:'partial',offset:60,length:8});
+assert.deepEqual(mediaRange('bytes=60-100',68),{kind:'partial',offset:60,length:8});
+for(const value of ['bytes=68-','bytes=7-0','bytes=-0','bytes=999999999999999999999-'])assert.deepEqual(mediaRange(value,68),{kind:'unsatisfiable'});
+for(const value of ['invalid','bytes=-','bytes=0-7,16-23'])assert.deepEqual(mediaRange(value,68),{kind:'full'});
+console.log('PASS complete downloads, video seek ranges, suffixes and unsatisfiable bounds');

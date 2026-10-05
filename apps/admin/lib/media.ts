@@ -1,5 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { db } from './server';
+import { mediaRange } from './media-range';
 export type MediaItem={id:string;name:string;object_key:string;mime:string;size:number;sha256:string;created_at:string;url:string};
 const supported=['image/png','image/jpeg','image/webp','image/gif','video/mp4','video/webm'];
 export function validSignature(mime:string,bytes:Uint8Array):boolean {
@@ -39,10 +40,12 @@ export async function serveMedia(id:string,request:Request,publicOnly=false):Pro
   }
   const media=await db().prepare('SELECT * FROM media WHERE id=?').bind(id).first<MediaItem>();
   if(!media)return new Response('不存在',{status:404});
-  const object=await env.BUCKET.get(media.object_key,{range:request.headers});
+  const range=mediaRange(request.headers.get('Range'),media.size);
+  if(range.kind==='unsatisfiable')return new Response(null,{status:416,headers:{'Content-Range':`bytes */${media.size}`,'Accept-Ranges':'bytes'}});
+  const object=await env.BUCKET.get(media.object_key,range.kind==='partial'?{range:{offset:range.offset,length:range.length}}:undefined);
   if(!object)return new Response('不存在',{status:404});
   const headers=new Headers({'Content-Type':media.mime,'X-Content-Type-Options':'nosniff','Content-Disposition':'inline','Cache-Control':'private, max-age=60','Accept-Ranges':'bytes'});
   headers.set('ETag',object.httpEtag);
-  if(object.range&&'offset'in object.range&&typeof object.range.offset==='number'&&typeof object.range.length==='number'){const start=object.range.offset,end=start+object.range.length-1;headers.set('Content-Range',`bytes ${start}-${end}/${object.size}`);headers.set('Content-Length',String(object.range.length));return new Response(object.body,{status:206,headers});}
+  if(range.kind==='partial'){headers.set('Content-Range',`bytes ${range.offset}-${range.offset+range.length-1}/${object.size}`);headers.set('Content-Length',String(range.length));return new Response(object.body,{status:206,headers});}
   headers.set('Content-Length',String(object.size));return new Response(object.body,{headers});
 }

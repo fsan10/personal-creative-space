@@ -42,6 +42,8 @@ def verify():
         item=publish(item)
         assert call('/api/public/media/'+media['id'],raw=True)==png
         assert call('/api/public/media/'+media['id'],extra={'Range':'bytes=0-7'},expected=206,raw=True)==png[:8]
+        assert call('/api/public/media/'+media['id'],extra={'Range':'bytes=-8'},expected=206,raw=True)==png[-8:]
+        call('/api/public/media/'+media['id'],extra={'Range':'bytes=99999-'},expected=416,raw=True)
         print('PASS R2 upload, hash deduplication, draft visibility and HTTP ranges',flush=True)
         previous=item.copy()
         item=call('/api/content','POST',{**item,'markdown':source+'\n未发布的新修改','expectedRevision':item['revision']})['item']
